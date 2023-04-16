@@ -1,4 +1,4 @@
-from MetricMethod.KNN import KNN
+from MetricMethod.MetricMethods import KNN
 
 knn = KNN()
 
