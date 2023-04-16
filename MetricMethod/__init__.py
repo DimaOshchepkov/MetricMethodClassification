@@ -1,1 +1,1 @@
-from MetricMethod import *
+from .MetricMethods import *

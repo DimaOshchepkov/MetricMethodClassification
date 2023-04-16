@@ -13,30 +13,57 @@ __all__ = [
     'ParzenWindowVariableWidth']
 
 class IMetricMethod():
+    """Is a generalization for all metric methods"""
+    _method : IMethodOfGetNeighbours
+    _methods_factory : MethodOfGetNeighboursFactory
 
-    __method : IMethodOfGetNeighbours
-    __methods_factory : MethodOfGetNeighboursFactory
-
-    __metric : IMetric
-    __metric_factory : MetricsFactory
+    _metric : IMetric
+    _metric_factory : MetricsFactory
 
     def __init__(self, metric : str, method : str) -> None:
-        
-        self.__metric_factory = MetricsFactory()
-        self.__metric = self.__metric_factory.get_metrics(metric)
+        """Common initializer for all metric methods
 
-        self.__methods_factory = MethodOfGetNeighboursFactory()
-        self.__method = self.__methods_factory.get_method(name_method=method, metric=metric)
+        Args:
+            metric (str): kind of metric
+            method (str): nearest neighbor method
+        """
+        self._metric_factory = MetricsFactory()
+        self._metric = self._metric_factory.get_metrics(metric)
 
+        self._methods_factory = MethodOfGetNeighboursFactory()
+        self._method = self._methods_factory.get_method(name_method=method, metric=metric)
+
+    @abstractmethod
     def fit(self, data : pd.Series) -> None:
-        pass
+        """Data preprocessing
+
+        Args:
+            data (pd.Series): initial data
+        """
+        raise NotImplementedError()
 
     @abstractmethod
     def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:
+        """
+        Args:
+            train_Y (pd.Series): Training sample class labels 
+            data_point (pd.Series): The object for which the nearest neighbor is found
+
+        Returns:
+            any: Returns nearest neighbor
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
+        """
+        Args:
+            X_test (pd.DataFrame): test set
+            Y_train (pd.Series): training data class labels
+
+        Returns:
+            np.ndarray: Array of predicted class labels
+        """
         raise NotImplementedError()
     
 
@@ -47,9 +74,8 @@ class OneNN(IMetricMethod):
 
 
     def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:
-        ''' Эта функция фозвращает класс соседа объекта data_point, который встречается чаще всего'''
 
-        nearest_index, distances = self.__method.get_neighbours(point=data_point, knn=1)
+        nearest_index, distances = self._method.get_neighbours(point=data_point, knn=1)
         
         c_neighbor = np.take(train_Y, nearest_index)
         unique, counts = np.unique(c_neighbor, return_counts=True)
@@ -57,10 +83,10 @@ class OneNN(IMetricMethod):
         return unique[np.argmax(counts)]  
     
     def fit(self, data : pd.Series) -> None:
-        self.__method.preprocessing(data)
+        self._method.preprocessing(data)
 
     def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
-        
+
         predict = []
         for row in np.array(X_test):
             predict.append(self.__Get_Neighbor(Y_train, row, 1))
@@ -71,13 +97,22 @@ class OneNN(IMetricMethod):
 
 class KNN(IMetricMethod):
 
-    def __init__(self, metric : str = "euclidean", method : str = "exhaustive") -> None:
+    __countNeighbor : int
+
+    def __init__(self, metric : str = "euclidean", method : str = "exhaustive",
+                 countNeigbor : int = 10) -> None:
+        """
+        Args:
+            metric (str): kind of metric. Defaults to "euclidean".
+            method (str): nearest neighbor method. Defaults to "exhaustive".
+            countNeigbor (int): number of nearest neighbors. Defaults to 10.
+        """
         super().__init__(metric, method)
+        self.__countNeighbor = countNeigbor    
 
-    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series, countNeighbor : int) -> any:
-        ''' Эта функция фозвращает класс соседа объекта data_point, который встречается чаще всего'''
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:      
 
-        nearest_index, distances = self.__method.get_neighbours(point=data_point, knn=countNeighbor)
+        nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor)
        
         c_neighbor = np.take(train_Y, nearest_index)
         unique, counts = np.unique(c_neighbor, return_counts=True)
@@ -85,14 +120,13 @@ class KNN(IMetricMethod):
         return unique[np.argmax(counts)]  
     
     def fit(self, data : pd.Series) -> None:
-        self.__method.preprocessing(data)
+        self._method.preprocessing(data)
 
-    def predict(self, X_test : pd.DataFrame,
-                Y_train : pd.Series, count_neigbors : int = 10) -> np.ndarray:
+    def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(Y_train, row, count_neigbors))
+            predict.append(self.__Get_Neighbor(Y_train, row))
 
         return np.array(predict) 
     
@@ -102,32 +136,39 @@ class ParzenWindowFixedWidth(IMetricMethod):
     __kernel : IKernel
     __kernel_factory = KernelFactory()
 
+    __width : float
+
     def __init__(self, metric : str = "euclidean", method : str = "exhaustive",
-                 kernel : str = "default") -> None:
+                 kernel : str = "rectangular", width : float = 10) -> None:
+        """
+        Args:
+            metric (str): kind of metric. Defaults to "euclidean".
+            method (str): nearest neighbor method. Defaults to "exhaustive".
+            kernel (str): kind of kernel. Defaults to "rectangular".
+            width (float): window width. Defaults to 10.
+        """
         super().__init__(metric, method)
         self.__kernel = self.__kernel_factory.get_kernel(name_kernel=kernel)
+        self.__width = width
 
-    def __Get_Neighbor(self, train_Y : pd.Series,
-                        data_point : pd.Series, width : float) -> any:
-        ''' Эта функция фозвращает класс соседа объекта data_point, который встречается чаще всего'''
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:       
 
-        nearest_index, distances = self.__method.get_neighbours(point=data_point, width=width)
+        nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
 
         nearest = {cl : 0 for cl in np.unique(train_Y)}
-        for i in nearest_index:
-            nearest[train_Y.iloc[i]] += self.__kernel.kernel_func(distances[i]/width)
+        for ind, dist in zip(nearest_index, distances):
+            nearest[train_Y[ind]] += self.__kernel.kernel_func(dist/self.__width)
 
         return max(nearest, key=nearest.get)
     
     def fit(self, data : pd.Series) -> None:
-        self.__method.preprocessing(data)
+        self._method.preprocessing(data)
 
-    def predict(self, X_test : pd.DataFrame,
-                Y_train : pd.Series, width : float = 10) -> np.ndarray:
+    def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(Y_train, row, width))
+            predict.append(self.__Get_Neighbor(Y_train, row))
 
         return np.array(predict) 
     
@@ -137,33 +178,40 @@ class ParzenWindowVariableWidth(IMetricMethod):
     __kernel : IKernel
     __kernel_factory = KernelFactory()
 
+    __countNeighbor : int
+
     def __init__(self, metric : str = "euclidean", method : str = "exhaustive",
-                 kernel : str = "default") -> None:
-                 
+                 kernel : str = "rectangular", countNeighbor : int = 10) -> None:
+        """
+        Args:
+            metric (str): kind of metric. Defaults to "euclidean".
+            method (str): nearest neighbor method. Defaults to "exhaustive".
+            kernel (str): kind of kernel. Defaults to "rectangular".
+            countNeigbor (int): number of nearest neighbors. Defaults to 10.
+        """        
         super().__init__(metric, method)
         self.__kernel = self.__kernel_factory.get_kernel(name_kernel=kernel)
+        self.__countNeighbor = countNeighbor
 
-    def __Get_Neighbor(self, train_Y : pd.Series,
-                        data_point : pd.Series, k : int) -> any:
-        ''' Эта функция фозвращает класс соседа объекта data_point, который встречается чаще всего'''
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:
 
-        nearest_index, distances = self.__method.get_neighbours(point=data_point, knn=k+1)
-        width = distances[k]
+        nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor + 1)
+        width = distances[self.__countNeighbor]
 
         nearest = {cl : 0 for cl in np.unique(train_Y)}
-        for i in nearest_index[:k+1]:
-            nearest[train_Y.iloc[i]] += self.__kernel.kernel_func(distances[i]/width)
+        for ind, dist in zip(nearest_index[:self.__countNeighbor + 1], distances[:self.__countNeighbor + 1]):
+            nearest[train_Y[ind]] += self.__kernel.kernel_func(dist/width)
 
         return max(nearest, key=nearest.get)
     
     def fit(self, data : pd.Series) -> None:
-        self.__method.preprocessing(data)
+        self._method.preprocessing(data)
 
     def predict(self, X_test : pd.DataFrame,
-                Y_train : pd.Series, k : int = 10) -> np.ndarray:
+                Y_train : pd.Series) -> np.ndarray:
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(Y_train, row, k))
+            predict.append(self.__Get_Neighbor(Y_train, row))
 
         return np.array(predict) 

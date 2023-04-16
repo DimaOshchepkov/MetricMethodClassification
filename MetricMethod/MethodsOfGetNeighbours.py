@@ -13,18 +13,18 @@ __all__ = [
 
 class IMethodOfGetNeighbours(ABC):
     
-    __metric : str
-    __metric_factory = MetricsFactory()
+    _metric : str
+    _metric_factory = MetricsFactory()
 
     def __init__(self, metric : str) -> None:
-        self.__metric = metric
+        self._metric = metric
 
     @abstractmethod
     def preprocessing(self, data : pd.DataFrame) -> None:
         raise NotImplementedError()
         
     @abstractmethod
-    def get_neighbours(self, data : pd.DataFrame, point : pd.Series, knn : int,
+    def get_neighbours(self, point : pd.Series, knn : int,
                         width : float = -1) -> tuple[np.ndarray, np.ndarray]:
         raise NotImplementedError()
     
@@ -32,9 +32,6 @@ class IMethodOfGetNeighbours(ABC):
 class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
 
     __data : pd.DataFrame
-    __metric : str
-    def __init__(self, metric : str) -> None:
-        self.__metric = metric
 
     def preprocessing(self, data: pd.DataFrame) -> None:
         self.__data = data
@@ -42,13 +39,14 @@ class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
     def get_neighbours(self, point: pd.Series, knn : int = -1,
                         width : float = -1) -> tuple[np.ndarray, np.ndarray]:
 
-        distances = self.__metric_factory(self.__metric).get_distances(self.__data, point)
+        distances = self._metric_factory.get_metrics(self._metric).get_distances(self.__data, point)
         if width == -1 and knn != -1: 
             nearest_neighbor_index = np.argpartition(distances, knn, axis=None)[:knn] 
             return nearest_neighbor_index, distances
         elif width != -1 and knn == -1:
             index_elem_less_width = np.where(distances < width)[0]
             return index_elem_less_width, np.take(distances, index_elem_less_width)
+        
         
 
 
@@ -57,20 +55,18 @@ class KDTreeGetterNeighbours(IMethodOfGetNeighbours):
     __kdtree : KDTree
 
     def preprocessing(self, data: pd.DataFrame) -> None:
-        self.__kdtree = KDTree(data, metric=self.__metric_factory(self.__metric).get_distance)
+        self.__kdtree = KDTree(data, metric=self._metric)
 
     def get_neighbours(self, point: pd.Series, knn : int = -1,
                         width : float = -1) -> tuple[np.ndarray, np.ndarray]:
 
         if width == -1 and knn != -1:
-            distance, nearest_neighbor_index = self.__kdtree.query(point, k=knn,
-                                                     metric=self.__metric_factory(self.__metric))
+            distance, nearest_neighbor_index = self.__kdtree.query(point.reshape(1, -1), k=knn)
             return nearest_neighbor_index, distance
         elif width != -1 and knn == -1:
             # Define a condition
-            nearest_neighbor_index = self.__kdtree.query_ball_point(point, width,
-                                                     metric=self.__metric_factory(self.__metric))
-            return nearest_neighbor_index, self.__kdtree[nearest_neighbor_index]
+            distance, nearest_neighbor_index = self.__kdtree.query_radius(point.reshape(1, -1), r=width, return_distance=True)
+            return nearest_neighbor_index, distance
         
 
 

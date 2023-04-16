@@ -10,18 +10,35 @@ __all__ = [
             'CosineMetric']
 
 class IMetric(ABC):
-
+    
     @abstractmethod
     def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:
+        """_summary_
+
+        Args:
+            data (pd.DataFrame): matrix of vectors, with each of which the distance to point will be calculated
+            point (pd.Series): vector from which distances will be calculated
+
+        Returns:
+            np.ndarray: Vector from distances
+        """
         pass
 
     @abstractmethod
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
+        """
+        Args:
+            data (pd.Series): vector1
+            point (pd.Series): vector2
+
+        Returns:
+            float: distance between data and point
+        """        
         pass
 
 
 class ManhattanMetric(IMetric):
-
+    
     def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:
         return np.sum(np.abs(data - point), axis=1)
     
@@ -49,7 +66,6 @@ class CosineMetric(IMetric):
     
 
 class MetricsFactory:
-
     __exist_metrics : list = ["euclidean", "cityblock", 'cosine']
 
     @property

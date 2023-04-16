@@ -36,6 +36,8 @@ class KernelFactory():
             return RectangularKernel()
         elif name_kernel == "gaussian":
             return GaussianKernel()
+        else:
+            raise ValueError("Unknown kernel")
         
 
 class RectangularKernel(IKernel):
