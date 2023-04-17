@@ -24,8 +24,12 @@ class IMetricMethod():
         """Common initializer for all metric methods
 
         Args:
-            metric (str): kind of metric
-            method (str): nearest neighbor method
+            metric (str): kind of metric. 
+            Possible values: "euclidean", "manhattan", "cosine".
+
+            method (str): nearest neighbor method. 
+            Possible values: "exhaustive", "kdtree".
+            
         """
         self._metric_factory = MetricsFactory()
         self._metric = self._metric_factory.get_metrics(metric)
@@ -103,8 +107,12 @@ class KNN(IMetricMethod):
                  countNeigbor : int = 10) -> None:
         """
         Args:
-            metric (str): kind of metric. Defaults to "euclidean".
-            method (str): nearest neighbor method. Defaults to "exhaustive".
+            metric (str): kind of metric. Defaults to "euclidean". 
+            Possible values: "euclidean", "manhattan", "cosine".
+
+            method (str): nearest neighbor method. Defaults to "exhaustive". 
+            Possible values: "exhaustive", "kdtree".
+            
             countNeigbor (int): number of nearest neighbors. Defaults to 10.
         """
         super().__init__(metric, method)
@@ -142,9 +150,14 @@ class ParzenWindowFixedWidth(IMetricMethod):
                  kernel : str = "rectangular", width : float = 10) -> None:
         """
         Args:
-            metric (str): kind of metric. Defaults to "euclidean".
-            method (str): nearest neighbor method. Defaults to "exhaustive".
+            metric (str): kind of metric. Defaults to "euclidean". 
+            Possible values: "euclidean", "manhattan", "cosine".
+
+            method (str): nearest neighbor method. Defaults to "exhaustive". 
+            Possible values: "exhaustive", "kdtree".
+
             kernel (str): kind of kernel. Defaults to "rectangular".
+
             width (float): window width. Defaults to 10.
         """
         super().__init__(metric, method)
@@ -184,9 +197,15 @@ class ParzenWindowVariableWidth(IMetricMethod):
                  kernel : str = "rectangular", countNeighbor : int = 10) -> None:
         """
         Args:
-            metric (str): kind of metric. Defaults to "euclidean".
-            method (str): nearest neighbor method. Defaults to "exhaustive".
-            kernel (str): kind of kernel. Defaults to "rectangular".
+            metric (str): kind of metric. Defaults to "euclidean". 
+            Possible values: "euclidean", "manhattan", "cosine".
+
+            method (str): nearest neighbor method. Defaults to "exhaustive". 
+            Possible values: "exhaustive", "kdtree".
+
+            kernel (str): kind of kernel. Defaults to "rectangular". 
+            Possible values: "rectangular", "gaussian".
+
             countNeigbor (int): number of nearest neighbors. Defaults to 10.
         """        
         super().__init__(metric, method)

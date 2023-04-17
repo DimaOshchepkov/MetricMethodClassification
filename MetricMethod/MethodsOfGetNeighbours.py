@@ -62,11 +62,11 @@ class KDTreeGetterNeighbours(IMethodOfGetNeighbours):
 
         if width == -1 and knn != -1:
             distance, nearest_neighbor_index = self.__kdtree.query(point.reshape(1, -1), k=knn)
-            return nearest_neighbor_index, distance
+            return nearest_neighbor_index.ravel(), distance.ravel() # FIXME: I don't know why query_radius returned np.array([np.array([
         elif width != -1 and knn == -1:
             # Define a condition
-            distance, nearest_neighbor_index = self.__kdtree.query_radius(point.reshape(1, -1), r=width, return_distance=True)
-            return nearest_neighbor_index, distance
+            nearest_neighbor_index, distance = self.__kdtree.query_radius(point.reshape(1, -1), r=width, return_distance=True)
+            return nearest_neighbor_index.ravel()[0].ravel(), distance.ravel()[0].ravel() # FIXME: Why?
         
 
 
