@@ -43,7 +43,7 @@ class ManhattanMetric(IMetric):
         return np.sum(np.abs(data - point), axis=1)
     
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
-        return np.sum(np.abs(data - point))
+        return np.sum(np.abs(data - point), axis=-1)
     
 class EuclideanMetric(IMetric):
 
@@ -51,9 +51,10 @@ class EuclideanMetric(IMetric):
         return np.linalg.norm(data - point, axis=1)
     
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
-        return np.linalg.norm(data - point)
+        return np.linalg.norm(data - point, axis=-1)
     
 
+#TODO: rewrite this to one function in class
 class CosineMetric(IMetric):
 
     def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:   
@@ -62,7 +63,7 @@ class CosineMetric(IMetric):
         
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return (1 - data.dot(point) / 
-                    (np.linalg.norm(data) * np.linalg.norm(point)))
+                    (np.linalg.norm(data) * np.linalg.norm(point))) #TODO: rewrite this to one function in class
     
 
 class MetricsFactory:

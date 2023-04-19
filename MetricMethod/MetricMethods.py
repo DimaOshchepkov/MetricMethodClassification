@@ -20,6 +20,8 @@ class IMetricMethod():
     _metric : IMetric
     _metric_factory : MetricsFactory
 
+    _y_train : pd.Series
+
     def __init__(self, metric : str, method : str) -> None:
         """Common initializer for all metric methods
 
@@ -38,11 +40,12 @@ class IMetricMethod():
         self._method = self._methods_factory.get_method(name_method=method, metric=metric)
 
     @abstractmethod
-    def fit(self, data : pd.Series) -> None:
+    def fit(self, data : pd.Series, y_train : pd.Series) -> None:
         """Data preprocessing
 
         Args:
             data (pd.Series): initial data
+            y_train (pd.Series): training data class labels
         """
         raise NotImplementedError()
 
@@ -59,7 +62,7 @@ class IMetricMethod():
         raise NotImplementedError()
 
     @abstractmethod
-    def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
+    def predict(self, X_test : pd.DataFrame) -> np.ndarray:
         """
         Args:
             X_test (pd.DataFrame): test set
@@ -86,14 +89,15 @@ class OneNN(IMetricMethod):
 
         return unique[np.argmax(counts)]  
     
-    def fit(self, data : pd.Series) -> None:
+    def fit(self, data : pd.Series, y_train : pd.Series) -> None:
         self._method.preprocessing(data)
+        self._y_train = y_train
 
-    def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
+    def predict(self, X_test : pd.DataFrame) -> np.ndarray:
 
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(Y_train, row, 1))
+            predict.append(self.__Get_Neighbor(self._y_train, row, 1))
 
         return np.array(predict) 
     
@@ -127,14 +131,15 @@ class KNN(IMetricMethod):
 
         return unique[np.argmax(counts)]  
     
-    def fit(self, data : pd.Series) -> None:
+    def fit(self, data : pd.Series, y_train : pd.Series) -> None:
         self._method.preprocessing(data)
+        self._y_train = y_train
 
-    def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
+    def predict(self, X_test : pd.DataFrame) -> np.ndarray:
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(Y_train, row))
+            predict.append(self.__Get_Neighbor(self._y_train, row))
 
         return np.array(predict) 
     
@@ -174,14 +179,15 @@ class ParzenWindowFixedWidth(IMetricMethod):
 
         return max(nearest, key=nearest.get)
     
-    def fit(self, data : pd.Series) -> None:
+    def fit(self, data : pd.Series, y_train : pd.Series) -> None:
         self._method.preprocessing(data)
+        self._y_train = y_train
 
-    def predict(self, X_test : pd.DataFrame, Y_train : pd.Series) -> np.ndarray:
+    def predict(self, X_test : pd.DataFrame) -> np.ndarray:
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(Y_train, row))
+            predict.append(self.__Get_Neighbor(self._y_train, row))
 
         return np.array(predict) 
     
@@ -223,14 +229,72 @@ class ParzenWindowVariableWidth(IMetricMethod):
 
         return max(nearest, key=nearest.get)
     
-    def fit(self, data : pd.Series) -> None:
+    def fit(self, data : pd.Series, y_train : pd.Series) -> None:
         self._method.preprocessing(data)
+        self._y_train = y_train
 
-    def predict(self, X_test : pd.DataFrame,
-                Y_train : pd.Series) -> np.ndarray:
+    def predict(self, X_test : pd.DataFrame) -> np.ndarray:
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(Y_train, row))
+            predict.append(self.__Get_Neighbor(self._y_train, row))
 
         return np.array(predict) 
+    
+    class PotentialFunction(IMetricMethod):
+
+        __kernel : IKernel
+        __kernel_factory = KernelFactory()
+
+        __width : int
+        __eps : float
+
+        __potentials : np.ndarray
+        
+
+        def __init__(self, metric : str = "euclidean", method : str = "exhaustive",
+                 kernel : str = "rectangular", width : float = 0.3, eps : float = 0.05) -> None:
+            """
+            Args:
+                metric (str): kind of metric. Defaults to "euclidean". 
+                Possible values: "euclidean", "manhattan", "cosine".
+                
+                method (str): nearest neighbor method. Defaults to "exhaustive".
+                Possible values: "exhaustive", "kdtree".
+                
+                kernel (str): kind of kernel. Defaults to "rectangular".
+                Possible values: "rectangular", "gaussian".
+                
+                countNeigbor (int): number of nearest neighbors. Defaults to 10.
+        """        
+            super().__init__(metric, method)
+            self.__kernel = self.__kernel_factory.get_kernel(name_kernel=kernel)
+            self.__width = width
+            self.__eps = eps
+
+        def fit(self, data : pd.Series, y_train : pd.Series) -> None:
+            self._method.preprocessing(data)
+            self._y_train = y_train
+            self.__potentials = np.zeros(data.shape[0])
+
+            # Distance matrix from each vector to each
+            self._metric(data[:, np.newaxis, :], data[np.newaxis, :, :]) #TODO: this don't work to cosine metric
+            
+
+        def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:       
+
+            nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
+
+            nearest = {cl : 0 for cl in np.unique(train_Y)}
+            for ind, dist in zip(nearest_index, distances):
+                nearest[train_Y[ind]] += self.__kernel.kernel_func(dist/self.__width)
+
+            return max(nearest, key=nearest.get)
+        
+        def predict(self, X_test : pd.DataFrame) -> np.ndarray:
+        
+            predict = []
+            for row in np.array(X_test):
+                predict.append(self.__Get_Neighbor(self._y_train, row))
+
+            return np.array(predict)
