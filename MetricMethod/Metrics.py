@@ -63,7 +63,7 @@ class CosineMetric(IMetric):
         
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return (1 - data.dot(point) / 
-                    (np.linalg.norm(data) * np.linalg.norm(point))) #TODO: rewrite this to one function in class
+                    (np.linalg.norm(data, axis=-1) * np.linalg.norm(point))) 
     
 
 class MetricsFactory:

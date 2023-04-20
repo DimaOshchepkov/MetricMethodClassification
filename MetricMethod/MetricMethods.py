@@ -272,13 +272,45 @@ class ParzenWindowVariableWidth(IMetricMethod):
             self.__width = width
             self.__eps = eps
 
-        def fit(self, data : pd.Series, y_train : pd.Series) -> None:
+        def fit(self, data : pd.Series, y_train : pd.Series) -> None: #FIXME: this needs to be refactored
             self._method.preprocessing(data)
             self._y_train = y_train
             self.__potentials = np.zeros(data.shape[0])
 
             # Distance matrix from each vector to each
-            self._metric(data[:, np.newaxis, :], data[np.newaxis, :, :]) #TODO: this don't work to cosine metric
+            dist_matrix = self._metric.get_distance(data[:, np.newaxis, :],
+                                                    data[np.newaxis, :, :]) 
+            vectors_dist_less_width = {}
+
+            # Loop through each vector and check if its distance falls within the distance range
+            for i in range(len(dist_matrix)):
+                vector_distance = dist_matrix[i]
+                # Get the indexes of vectors that fall within the distance range
+                included_indexes = np.where((vector_distance > 0) & (vector_distance <= self.__width))[0]
+                # Add the included indexes to the dictionary with the vector index as the key
+                vectors_dist_less_width[i] = included_indexes
+
+            err = 1.0
+            while (err > self.__eps):
+                while (True):
+                    rand = np.random.randint(0, len(vectors_dist_less_width))
+                    nearest = {cl : 0 for cl in np.unique(y_train)}
+                    for ind in vectors_dist_less_width[rand]:
+                        nearest[y_train[ind]] += self.__potentials * self.__kernel.kernel_func(
+                                                            dist_matrix[rand, ind]/self.__width)
+
+                    cl = max(nearest, key=nearest.get)
+                    if cl != y_train[rand]:
+                        self.__potentials[rand] += 1
+                        break
+                
+                err = 0
+                for ind, vector in zip(range(len(data)), data):
+                    
+
+
+                
+
             
 
         def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:       
