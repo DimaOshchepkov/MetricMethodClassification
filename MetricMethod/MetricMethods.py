@@ -4,6 +4,7 @@ from .Metrics import *
 from abc import abstractmethod
 import numpy as np
 import pandas as pd
+from sklearn.metrics import accuracy_score
 
 __all__ = [
     'IMetricMethod', 
@@ -50,7 +51,8 @@ class IMetricMethod():
         raise NotImplementedError()
 
     @abstractmethod
-    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
+                           nearest_index : np.ndarray, distances : np.ndarray) -> any: 
         """
         Args:
             train_Y (pd.Series): Training sample class labels 
@@ -80,9 +82,10 @@ class OneNN(IMetricMethod):
         super().__init__(metric, method)
 
 
-    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
+                           nearest_index : np.ndarray, distances : np.ndarray) -> any: 
 
-        nearest_index, distances = self._method.get_neighbours(point=data_point, knn=1)
+        #nearest_index, distances = self._method.get_neighbours(point=data_point, knn=1)
         
         c_neighbor = np.take(train_Y, nearest_index)
         unique, counts = np.unique(c_neighbor, return_counts=True)
@@ -97,7 +100,8 @@ class OneNN(IMetricMethod):
 
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(self._y_train, row, 1))
+            nearest_index, distances = self._method.get_neighbours(point=row, knn=1)
+            predict.append(self.__Get_Neighbor(self._y_train, row, nearest_index, distances))
 
         return np.array(predict) 
     
@@ -122,9 +126,10 @@ class KNN(IMetricMethod):
         super().__init__(metric, method)
         self.__countNeighbor = countNeigbor    
 
-    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:      
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
+                           nearest_index : np.ndarray, distances : np.ndarray) -> any:       
 
-        nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor)
+        # nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor)
        
         c_neighbor = np.take(train_Y, nearest_index)
         unique, counts = np.unique(c_neighbor, return_counts=True)
@@ -139,7 +144,8 @@ class KNN(IMetricMethod):
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(self._y_train, row))
+            nearest_index, distances = self._method.get_neighbours(point=row, knn=self.__countNeighbor)
+            predict.append(self.__Get_Neighbor(self._y_train, row, nearest_index, distances))
 
         return np.array(predict) 
     
@@ -169,9 +175,10 @@ class ParzenWindowFixedWidth(IMetricMethod):
         self.__kernel = self.__kernel_factory.get_kernel(name_kernel=kernel)
         self.__width = width
 
-    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:       
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
+                           nearest_index : np.ndarray, distances : np.ndarray) -> any:        
 
-        nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
+        # nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
 
         nearest = {cl : 0 for cl in np.unique(train_Y)}
         for ind, dist in zip(nearest_index, distances):
@@ -187,7 +194,8 @@ class ParzenWindowFixedWidth(IMetricMethod):
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(self._y_train, row))
+            nearest_index, distances = self._method.get_neighbours(point=row, width=self.__width)
+            predict.append(self.__Get_Neighbor(self._y_train, row, nearest_index, distances))
 
         return np.array(predict) 
     
@@ -218,9 +226,10 @@ class ParzenWindowVariableWidth(IMetricMethod):
         self.__kernel = self.__kernel_factory.get_kernel(name_kernel=kernel)
         self.__countNeighbor = countNeighbor
 
-    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:
+    def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
+                           nearest_index : np.ndarray, distances : np.ndarray) -> any: 
 
-        nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor + 1)
+        #nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor + 1)
         width = distances[self.__countNeighbor]
 
         nearest = {cl : 0 for cl in np.unique(train_Y)}
@@ -237,9 +246,11 @@ class ParzenWindowVariableWidth(IMetricMethod):
         
         predict = []
         for row in np.array(X_test):
-            predict.append(self.__Get_Neighbor(self._y_train, row))
+            nearest_index, distances = self._method.get_neighbours(point=row, knn=self.__countNeighbor + 1)
+            predict.append(self.__Get_Neighbor(self._y_train, row, nearest_index, distances))
 
         return np.array(predict) 
+    
     
     class PotentialFunction(IMetricMethod):
 
@@ -293,26 +304,17 @@ class ParzenWindowVariableWidth(IMetricMethod):
             err = 1.0
             while (err > self.__eps):
                 while (True):
-                    rand = np.random.randint(0, len(vectors_dist_less_width))
-                    nearest = {cl : 0 for cl in np.unique(y_train)}
-                    for ind in vectors_dist_less_width[rand]:
-                        nearest[y_train[ind]] += self.__potentials * self.__kernel.kernel_func(
-                                                            dist_matrix[rand, ind]/self.__width)
-
-                    cl = max(nearest, key=nearest.get)
+                    rand = np.random.randint(0, len(vectors_dist_less_width))                   
+                    cl = self.__Get_Neighbor(y_train, data[rand], vectors_dist_less_width[rand],
+                                              dist_matrix[rand, vectors_dist_less_width[rand]])
                     if cl != y_train[rand]:
                         self.__potentials[rand] += 1
                         break
                 
-                err = 0
-                for ind, vector in zip(range(len(data)), data):
+                predict = self.predict(data) 
+                err = accuracy_score(predict, self._y_train)
+
                     
-
-
-                
-
-            
-
         def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
                            nearest_index : np.ndarray, distances : np.ndarray) -> any:       
 
@@ -328,6 +330,7 @@ class ParzenWindowVariableWidth(IMetricMethod):
         
             predict = []
             for row in np.array(X_test):
-                predict.append(self.__Get_Neighbor(self._y_train, row))
+                nearest_index, distances = self._method.get_neighbours(point=row, width=self.__width)
+                predict.append(self.__Get_Neighbor(self._y_train, row, nearest_index, distances))
 
             return np.array(predict)
