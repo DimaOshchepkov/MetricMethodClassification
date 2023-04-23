@@ -313,9 +313,10 @@ class ParzenWindowVariableWidth(IMetricMethod):
 
             
 
-        def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series) -> any:       
+        def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
+                           nearest_index : np.ndarray, distances : np.ndarray) -> any:       
 
-            nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
+            #nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
 
             nearest = {cl : 0 for cl in np.unique(train_Y)}
             for ind, dist in zip(nearest_index, distances):

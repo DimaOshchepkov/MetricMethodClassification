@@ -10,6 +10,17 @@ __all__ = [
             'CosineMetric']
 
 class IMetric(ABC):
+
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+
+        return cls.__instance
+    
+    def __del__(self):
+        IMetric.__instance = None
     
     @abstractmethod
     def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:
