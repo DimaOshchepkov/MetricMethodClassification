@@ -128,8 +128,6 @@ class KNN(IMetricMethod):
 
     def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
                            nearest_index : np.ndarray, distances : np.ndarray) -> any:       
-
-        # nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor)
        
         c_neighbor = np.take(train_Y, nearest_index)
         unique, counts = np.unique(c_neighbor, return_counts=True)
@@ -177,8 +175,6 @@ class ParzenWindowFixedWidth(IMetricMethod):
 
     def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
                            nearest_index : np.ndarray, distances : np.ndarray) -> any:        
-
-        # nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
 
         nearest = {cl : 0 for cl in np.unique(train_Y)}
         for ind, dist in zip(nearest_index, distances):
@@ -229,7 +225,6 @@ class ParzenWindowVariableWidth(IMetricMethod):
     def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
                            nearest_index : np.ndarray, distances : np.ndarray) -> any: 
 
-        #nearest_index, distances = self._method.get_neighbours(point=data_point, knn=self.__countNeighbor + 1)
         width = distances[self.__countNeighbor]
 
         nearest = {cl : 0 for cl in np.unique(train_Y)}
@@ -302,8 +297,10 @@ class ParzenWindowVariableWidth(IMetricMethod):
                 vectors_dist_less_width[i] = included_indexes
 
             err = 1.0
+            # As long as the number of errors is greater than the specified
             while (err > self.__eps):
                 while (True):
+                    # Until we get a class mismatch to update the potentials
                     rand = np.random.randint(0, len(vectors_dist_less_width))                   
                     cl = self.__Get_Neighbor(y_train, data[rand], vectors_dist_less_width[rand],
                                               dist_matrix[rand, vectors_dist_less_width[rand]])
@@ -311,14 +308,13 @@ class ParzenWindowVariableWidth(IMetricMethod):
                         self.__potentials[rand] += 1
                         break
                 
+                # Counting the number of errors
                 predict = self.predict(data) 
-                err = accuracy_score(predict, self._y_train)
+                err = 1 - accuracy_score(predict, self._y_train)
 
                     
         def __Get_Neighbor(self, train_Y : pd.Series, data_point : pd.Series,
                            nearest_index : np.ndarray, distances : np.ndarray) -> any:       
-
-            #nearest_index, distances = self._method.get_neighbours(point=data_point, width=self.__width)
 
             nearest = {cl : 0 for cl in np.unique(train_Y)}
             for ind, dist in zip(nearest_index, distances):

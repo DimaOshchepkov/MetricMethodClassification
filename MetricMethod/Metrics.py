@@ -22,18 +22,6 @@ class IMetric(ABC):
     def __del__(self):
         IMetric.__instance = None
     
-    @abstractmethod
-    def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:
-        """_summary_
-
-        Args:
-            data (pd.DataFrame): matrix of vectors, with each of which the distance to point will be calculated
-            point (pd.Series): vector from which distances will be calculated
-
-        Returns:
-            np.ndarray: Vector from distances
-        """
-        pass
 
     @abstractmethod
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
@@ -50,28 +38,17 @@ class IMetric(ABC):
 
 class ManhattanMetric(IMetric):
     
-    def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:
-        return np.sum(np.abs(data - point), axis=1)
-    
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return np.sum(np.abs(data - point), axis=-1)
     
 class EuclideanMetric(IMetric):
-
-    def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:
-        return np.linalg.norm(data - point, axis=1)
     
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return np.linalg.norm(data - point, axis=-1)
     
 
-#TODO: rewrite this to one function in class
 class CosineMetric(IMetric):
-
-    def get_distances(self, data : pd.DataFrame, point : pd.Series) -> np.ndarray:   
-        return (np.ones(len(data)) - data.dot(point) / 
-                (np.linalg.norm(data, axis=1) * np.linalg.norm(point)))
-        
+       
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return (1 - data.dot(point) / 
                     (np.linalg.norm(data, axis=-1) * np.linalg.norm(point))) 

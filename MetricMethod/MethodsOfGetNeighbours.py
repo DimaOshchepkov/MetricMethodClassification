@@ -39,7 +39,7 @@ class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
     def get_neighbours(self, point: pd.Series, knn : int = -1,
                         width : float = -1) -> tuple[np.ndarray, np.ndarray]:
 
-        distances = self._metric_factory.get_metrics(self._metric).get_distances(self.__data, point)
+        distances = self._metric_factory.get_metrics(self._metric).get_distance(self.__data, point)
         if width == -1 and knn != -1: 
             nearest_neighbor_index = np.argpartition(distances, knn, axis=None)[:knn] 
             return nearest_neighbor_index, distances
