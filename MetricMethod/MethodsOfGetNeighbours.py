@@ -12,7 +12,7 @@ __all__ = [
     'MethodOfGetNeighboursFactory']
 
 class IMethodOfGetNeighbours(ABC):
-    
+    """Common interface for getting neighbours of a given point."""
     _metric : str
     _metric_factory = MetricsFactory()
 
@@ -24,13 +24,28 @@ class IMethodOfGetNeighbours(ABC):
         raise NotImplementedError()
         
     @abstractmethod
-    def get_neighbours(self, point : pd.Series, knn : int,
+    def get_neighbours(self, point : pd.Series, knn : int = -1,
                         width : float = -1) -> tuple[np.ndarray, np.ndarray]:
+        """
+        if width == -1 and knn != -1 will then return knn nearest neighbors.
+        if width != -1 and knn == -1 will then return the nearest neighbors
+        within the radius width.
+        Other configurations are not possible
+        
+        Args:
+            point (pd.Series): classification point
+            knn (int): count neighbours. Defaults to -1.
+            width (float): width of window. Defaults to -1.
+
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: nearest_neighbor_index, distances.
+        """
         raise NotImplementedError()
     
 
 class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
-
+    """Exhaustive search for neighbours of a given point."""
     __data : pd.DataFrame
 
     def preprocessing(self, data: pd.DataFrame) -> None:
@@ -51,7 +66,7 @@ class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
 
 
 class KDTreeGetterNeighbours(IMethodOfGetNeighbours):
-    
+    """Using KDtree for getting neighbours of a given point."""
     __kdtree : KDTree
 
     def preprocessing(self, data: pd.DataFrame) -> None:
@@ -71,6 +86,7 @@ class KDTreeGetterNeighbours(IMethodOfGetNeighbours):
 
 
 class MethodOfGetNeighboursFactory:
+    """Use this class to create a method of get neighbours."""
 
     __instance = None
 
@@ -94,6 +110,17 @@ class MethodOfGetNeighboursFactory:
 
     def get_method(self, name_method : str,
                     metric : str) -> IMethodOfGetNeighbours:
+        """Use this function to create a method of get neighbours.
+
+        Args:
+            name_method (str): name of the method.
+            Possible values: kdtree, exhaustive.
+
+            metric (str): metric to use.
+
+        Returns:
+            IMethodOfGetNeighbours: method of get neighbours.
+        """        
         
         if name_method == "kdtree":
             return KDTreeGetterNeighbours(metric)

@@ -35,6 +35,18 @@ class IMetric(ABC):
         """        
         pass
 
+    def get_distance_matrix(self, vectors : pd.DataFrame) -> np.ndarray:
+        """
+        Args:
+            data (pd.DataFrame): vectors
+            
+        Returns
+        -------
+        np.ndarray: distance matrix
+        """        
+        return self.get_distance(vectors[:, np.newaxis, :],
+                                vectors[np.newaxis, :, :])
+
 
 class ManhattanMetric(IMetric):
     
@@ -51,11 +63,21 @@ class CosineMetric(IMetric):
        
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return (1 - data.dot(point) / 
-                    (np.linalg.norm(data, axis=-1) * np.linalg.norm(point))) 
+                    (np.linalg.norm(data, axis=-1) * np.linalg.norm(point, axis=-1))) 
+    
+    def get_distance_matrix(self, vectors : pd.DataFrame) -> np.ndarray:
+        x = vectors[:, np.newaxis, :]
+        y = vectors[np.newaxis, :, :]
+        dot_product = np.sum(x * y, axis=-1)
+        norm_x = np.linalg.norm(x, axis=-1)
+        norm_y = np.linalg.norm(y, axis=-1)
+        return 1 - (dot_product / (norm_x * norm_y))
+
     
 
 class MetricsFactory:
-
+    """Use to create metrics"""
+    
     __instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -77,6 +99,16 @@ class MetricsFactory:
         return name in self.__exist_metrics
 
     def get_metrics(self, name : str) -> IMetric:
+        """
+        Use to create metrics
+
+        Args:
+            name (str): name of metric
+            Exists metrics: euclidean, cityblock, cosine
+
+        Returns:
+            IMetric: class of metric
+        """
         if name == "euclidean":
             return EuclideanMetric()
         elif name == "cityblock":
