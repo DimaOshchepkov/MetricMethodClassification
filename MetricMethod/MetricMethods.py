@@ -72,7 +72,7 @@ class IMetricMethod():
     def predict(self, X_test : pd.DataFrame) -> np.ndarray:
         """
         Makes a prediction for X_test
-        
+
         Args:
             X_test (pd.DataFrame): test set
 
@@ -321,7 +321,7 @@ class PotentialFunction(IMetricMethod):
 
         nearest = {cl : 0 for cl in np.unique(train_Y)}
         for ind, dist in zip(nearest_index, distances):
-            nearest[train_Y[ind]] += self.__kernel.kernel_func(dist/self.__width)
+            nearest[train_Y[ind]] += self.__kernel.kernel_func(dist/self.__width) * self.__potentials[ind]
 
         return max(nearest, key=nearest.get)
         
