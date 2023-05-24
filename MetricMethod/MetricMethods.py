@@ -22,7 +22,7 @@ class IMetricMethod():
     _metric : IMetric
     _metric_factory : MetricsFactory
 
-    _y_train : pd.Series
+    _y_train : np.array
 
     def __init__(self, metric : str, method : str) -> None:
         """Common initializer for all metric methods
@@ -120,7 +120,7 @@ class KNN(IMetricMethod):
         """
         Args:
             metric (str): kind of metric. Defaults to "euclidean". 
-            Possible values: "euclidean", "manhattan", "cosine".
+            Possible values: "euclidean", "cityblock", "cosine".
 
             method (str): nearest neighbor method. Defaults to "exhaustive". 
             Possible values: "exhaustive", "kdtree".
@@ -188,7 +188,7 @@ class ParzenWindowFixedWidth(IMetricMethod):
     
     def fit(self, data : pd.Series, y_train : pd.Series) -> None:
         self._method.preprocessing(data)
-        self._y_train = y_train
+        self._y_train = np.array(y_train)
 
     def predict(self, X_test : pd.DataFrame) -> np.ndarray:
         

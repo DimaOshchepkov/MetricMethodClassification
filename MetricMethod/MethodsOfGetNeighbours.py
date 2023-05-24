@@ -46,10 +46,10 @@ class IMethodOfGetNeighbours(ABC):
 
 class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
     """Exhaustive search for neighbours of a given point."""
-    __data : pd.DataFrame
+    __data : np.ndarray
 
     def preprocessing(self, data: pd.DataFrame) -> None:
-        self.__data = data
+        self.__data = np.array(data)
 
     def get_neighbours(self, point: pd.Series, knn : int = -1,
                         width : float = -1) -> tuple[np.ndarray, np.ndarray]:
