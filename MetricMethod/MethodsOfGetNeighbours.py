@@ -46,6 +46,11 @@ class IMethodOfGetNeighbours(ABC):
 
 class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
     """Exhaustive search for neighbours of a given point."""
+
+    @property
+    def data(self):
+        return self.__data
+    
     __data : np.ndarray
 
     def preprocessing(self, data: pd.DataFrame) -> None:
@@ -68,6 +73,10 @@ class ExhaustiveSearchGetterNeighbours(IMethodOfGetNeighbours):
 class KDTreeGetterNeighbours(IMethodOfGetNeighbours):
     """Using KDtree for getting neighbours of a given point."""
     __kdtree : KDTree
+
+    @property
+    def data(self):
+        return self.__kdtree
 
     def preprocessing(self, data: pd.DataFrame) -> None:
         self.__kdtree = KDTree(data, metric=self._metric)

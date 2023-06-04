@@ -97,6 +97,9 @@ class OneNN(IMetricMethod):
         return unique[np.argmax(counts)]  
     
     def fit(self, data : pd.Series, y_train : pd.Series) -> None:
+        data = np.array(data)
+        y_train = np.array(y_train)
+        
         self._method.preprocessing(data)
         self._y_train = y_train
 
@@ -139,6 +142,9 @@ class KNN(IMetricMethod):
         return unique[np.argmax(counts)]  
     
     def fit(self, data : pd.Series, y_train : pd.Series) -> None:
+        data = np.array(data)
+        y_train = np.array(y_train)
+
         self._method.preprocessing(data)
         self._y_train = y_train
 
@@ -187,6 +193,9 @@ class ParzenWindowFixedWidth(IMetricMethod):
         return max(nearest, key=nearest.get)
     
     def fit(self, data : pd.Series, y_train : pd.Series) -> None:
+        data = np.array(data)
+        y_train = np.array(y_train)
+
         self._method.preprocessing(data)
         self._y_train = np.array(y_train)
 
@@ -238,6 +247,9 @@ class ParzenWindowVariableWidth(IMetricMethod):
         return max(nearest, key=nearest.get)
     
     def fit(self, data : pd.Series, y_train : pd.Series) -> None:
+        data = np.array(data)
+        y_train = np.array(y_train)
+
         self._method.preprocessing(data)
         self._y_train = y_train
 
@@ -284,6 +296,8 @@ class PotentialFunction(IMetricMethod):
         self.__eps = eps
 
     def fit(self, data : pd.Series, y_train : pd.Series) -> None: #FIXME: this needs to be refactored
+        data = np.array(data)
+        y_train = np.array(y_train)
         self._method.preprocessing(data)
         self._y_train = y_train
         self.__potentials = np.zeros(data.shape[0])
