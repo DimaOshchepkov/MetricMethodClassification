@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from abc import ABC, abstractmethod
+from scipy.spatial.distance import cdist
 
 __all__ = [
             'IMetric',
@@ -35,6 +36,7 @@ class IMetric(ABC):
         """        
         pass
 
+    @abstractmethod
     def get_distance_matrix(self, vectors : pd.DataFrame) -> np.ndarray:
         """
         Args:
@@ -44,8 +46,7 @@ class IMetric(ABC):
         -------
         np.ndarray: distance matrix
         """        
-        return self.get_distance(vectors[:, np.newaxis, :],
-                                vectors[np.newaxis, :, :])
+        raise NotImplementedError
 
 
 class ManhattanMetric(IMetric):
@@ -53,10 +54,17 @@ class ManhattanMetric(IMetric):
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return np.sum(np.abs(data - point), axis=-1)
     
+    def get_distance_matrix(self, vectors : pd.DataFrame) -> np.ndarray:
+        return cdist(vectors, vectors, metric='cityblock')
+
+    
 class EuclideanMetric(IMetric):
     
     def get_distance(self, data : pd.Series, point : pd.Series) -> float:
         return np.linalg.norm(data - point, axis=-1)
+    
+    def get_distance_matrix(self, vectors : pd.DataFrame) -> np.ndarray:
+        return cdist(vectors, vectors, metric='euclidean')
     
 
 class CosineMetric(IMetric):
