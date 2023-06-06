@@ -74,12 +74,8 @@ class CosineMetric(IMetric):
                     (np.linalg.norm(data, axis=-1) * np.linalg.norm(point, axis=-1))) 
     
     def get_distance_matrix(self, vectors : pd.DataFrame) -> np.ndarray:
-        x = vectors[:, np.newaxis, :]
-        y = vectors[np.newaxis, :, :]
-        dot_product = np.sum(x * y, axis=-1)
-        norm_x = np.linalg.norm(x, axis=-1)
-        norm_y = np.linalg.norm(y, axis=-1)
-        return 1 - (dot_product / (norm_x * norm_y))
+        return cdist(vectors, vectors, metric='cosine')
+    
 
     
 

@@ -317,7 +317,9 @@ class PotentialFunction(IMetricMethod):
         err = 1.0
         # As long as the number of errors is greater than the specified
         while (err > self.__eps):
-            while (True):
+            i = 0
+            while (i < 1000):
+                i += 1
                 # Until we get a class mismatch to update the potentials
                 rand = np.random.randint(0, len(vectors_dist_less_width))                   
                 cl = self.__Get_Neighbor(y_train, vectors_dist_less_width[rand],
