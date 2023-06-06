@@ -5,6 +5,7 @@ from abc import abstractmethod
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
+from typing import Callable, Literal
 
 __all__ = [
     'IMetricMethod', 
@@ -12,7 +13,8 @@ __all__ = [
     'KNN', 
     'ParzenWindowFixedWidth', 
     'ParzenWindowVariableWidth',
-    'PotentialFunction']
+    'PotentialFunction',
+    'KNN_weight']
 
 class IMetricMethod():
     """Is a generalization for all metric methods"""
@@ -156,6 +158,53 @@ class KNN(IMetricMethod):
             predict.append(self.__Get_Neighbor(self._y_train, nearest_index))
 
         return np.array(predict) 
+    
+class KNN_weight(IMetricMethod):
+    """K nearest neighbor"""
+    __countNeighbor : int
+    __weight_func : Callable[[float], float]
+
+    def __init__(self, metric : Literal["euclidean", "cityblock", "cosine"] = "euclidean",
+                 method : Literal["exhaustive", "kdtree"] = "exhaustive",
+                 countNeigbor : int = 10,
+                 weight_func : Callable[[float], float] = lambda x : 1/x) -> None:
+        """
+        Args:
+            metric (Literal["euclidean", "cityblock", "cosine"]): kind of metric.
+            Defaults to "euclidean". 
+            weight_func (Callable[[float], float]): weight function for that
+            get distance from classifier object and neighbor
+            method (str): nearest neighbor method. Defaults to "exhaustive". 
+            countNeigbor (int): number of nearest neighbors. Defaults to 10.
+        """
+        super().__init__(metric, method)
+        self.__countNeighbor = countNeigbor    
+        self.__weight_func = weight_func
+
+    def __Get_Neighbor(self, train_Y : pd.Series, nearest_index : np.ndarray,
+                        distances : np.ndarray = None) -> any:       
+       
+        nearest = {cl : 0 for cl in np.unique(train_Y)}
+        for ind, dist in zip(nearest_index, distances):
+            nearest[train_Y[ind]] += self.__weight_func(dist)
+
+        return max(nearest, key=nearest.get)
+    
+    def fit(self, data : pd.Series, y_train : pd.Series) -> None:
+        data = np.array(data)
+        y_train = np.array(y_train)
+
+        self._method.preprocessing(data)
+        self._y_train = y_train
+
+    def predict(self, X_test : pd.DataFrame) -> np.ndarray:
+        
+        predict = []
+        for row in np.array(X_test):
+            nearest_index, distances = self._method.get_neighbours(point=row, knn=self.__countNeighbor)
+            predict.append(self.__Get_Neighbor(self._y_train, nearest_index, distances=distances))
+
+        return np.array(predict)
     
 
 class ParzenWindowFixedWidth(IMetricMethod):
