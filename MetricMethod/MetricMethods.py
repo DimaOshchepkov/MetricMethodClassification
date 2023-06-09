@@ -26,7 +26,8 @@ class IMetricMethod():
 
     _y_train : np.array
 
-    def __init__(self, metric : str, method : str) -> None:
+    def __init__(self, metric : Literal["euclidean", "cityblock", "cosine"],
+                 method : str) -> None:
         """Common initializer for all metric methods
 
         Args:
@@ -86,7 +87,8 @@ class IMetricMethod():
 
 class OneNN(IMetricMethod):
     """One nearest neighbor"""
-    def __init__(self, metric : str = "euclidean", method : str = "exhaustive") -> None:
+    def __init__(self, metric : Literal["euclidean", "cityblock", "cosine"] = "euclidean",
+                 method : str = "exhaustive") -> None:
         super().__init__(metric, method)
 
 
@@ -120,7 +122,8 @@ class KNN(IMetricMethod):
     """K nearest neighbor"""
     __countNeighbor : int
 
-    def __init__(self, metric : str = "euclidean", method : str = "exhaustive",
+    def __init__(self, metric : Literal["euclidean", "cityblock", "cosine"] = "euclidean",
+                 method : str = "exhaustive",
                  countNeigbor : int = 10) -> None:
         """
         Args:
