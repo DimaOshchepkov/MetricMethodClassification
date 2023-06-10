@@ -1,5 +1,6 @@
-import numpy as np
 from abc import ABC, abstractmethod
+
+import numpy as np
 
 __all__ = [
     'IKernel',
@@ -26,7 +27,6 @@ class IKernel(ABC):
 
 
 class GaussianKernel(IKernel):
-
     def kernel_func(self, r: float) -> float:
         return 1/np.sqrt(2 * np.pi) * np.exp(-2 * np.power(r, 2))
     

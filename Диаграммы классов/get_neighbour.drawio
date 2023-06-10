@@ -1,0 +1,114 @@
+<mxfile host="app.diagrams.net" modified="2023-06-10T16:51:59.932Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0" etag="HNIvfefOysiodvlKmyba" version="21.3.8" type="device">
+  <diagram name="Страница 1" id="2UsrdzDUDM1Ci1ucNa7j">
+    <mxGraphModel dx="1434" dy="782" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-1" value="ExhaustiveSearchGetterNeighbours" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="440" width="230" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-33" value="- __data: np.ndarray" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-1">
+          <mxGeometry y="26" width="230" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-34" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-1">
+          <mxGeometry y="52" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-35" value="+ preprocessing(self, data : pd.DataFrame): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-1">
+          <mxGeometry y="60" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-36" value="+ get_neighbours(self, point: Series, knn : int, width : float): Tuple[np.ndarray, np.ndarray]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-1">
+          <mxGeometry y="110" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-4" value="&lt;i&gt;&amp;lt;&amp;lt;Interface&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;IMethodOfGetNeighbours&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="319" y="140" width="190" height="278" as="geometry">
+            <mxRectangle x="540" y="160" width="120" height="40" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-5" value="- __instance Singleton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="40" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-32" value="# _metric_factory : MetricFactory" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="66" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-31" value="# _metric : IMetric" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="92" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-6" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="118" width="190" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-7" value="+ __new__: Singleton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="126" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-8" value="+ preprocessing(self, data : pd.DataFrame): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="152" width="190" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-9" value="+ get_neighbours(self, point: Series, knn : int, width : float): Tuple[np.ndarray, np.ndarray]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="202" width="190" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-10" value="+ __del__: Singleton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry y="252" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-11" value="MethodOfGetNeighboursFactory" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="304" y="650" width="220" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-12" value="- __instance Singleton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-11">
+          <mxGeometry y="26" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-13" value="- __exist_kernel : list" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-11">
+          <mxGeometry y="52" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-14" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-11">
+          <mxGeometry y="78" width="220" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-15" value="+ __del__: Singleton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-11">
+          <mxGeometry y="86" width="220" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-17" value="+ __new__: Singleton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-11">
+          <mxGeometry y="110" width="220" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-18" value="&lt;div&gt;+ get_mehod(self, name_method : str) : IMethodOfGetNeighbours&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-11">
+          <mxGeometry y="132" width="220" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-25" value="" style="endArrow=block;dashed=1;endFill=0;endSize=12;html=1;rounded=0;" edge="1" parent="1" source="JoOE3MSYfrm-XDd4vub3-1" target="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="480" y="490" as="sourcePoint" />
+            <mxPoint x="640" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-30" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;" edge="1" parent="1" source="JoOE3MSYfrm-XDd4vub3-11" target="JoOE3MSYfrm-XDd4vub3-1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="350" y="500" as="sourcePoint" />
+            <mxPoint x="510" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-37" value="KDtreeGetterNeighbours" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="440" width="230" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-38" value="- __data: KDtree" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-37">
+          <mxGeometry y="26" width="230" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-39" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-37">
+          <mxGeometry y="52" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-40" value="+ preprocessing(self, data : pd.DataFrame): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-37">
+          <mxGeometry y="60" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-41" value="+ get_neighbours(self, point: Series, knn : int, width : float): Tuple[np.ndarray, np.ndarray]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="JoOE3MSYfrm-XDd4vub3-37">
+          <mxGeometry y="110" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-42" value="" style="endArrow=block;dashed=1;endFill=0;endSize=12;html=1;rounded=0;" edge="1" parent="1" source="JoOE3MSYfrm-XDd4vub3-37" target="JoOE3MSYfrm-XDd4vub3-4">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="620" y="412" as="sourcePoint" />
+            <mxPoint x="708" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JoOE3MSYfrm-XDd4vub3-43" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;" edge="1" parent="1" source="JoOE3MSYfrm-XDd4vub3-11" target="JoOE3MSYfrm-XDd4vub3-37">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="689" y="697" as="sourcePoint" />
+            <mxPoint x="630" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

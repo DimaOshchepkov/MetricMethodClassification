@@ -1,6 +1,7 @@
+from abc import ABC, abstractmethod
+
 import numpy as np
 import pandas as pd
-from abc import ABC, abstractmethod
 from scipy.spatial.distance import cdist
 
 __all__ = [
